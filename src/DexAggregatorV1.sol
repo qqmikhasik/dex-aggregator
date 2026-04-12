@@ -5,7 +5,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -24,7 +24,7 @@ contract DexAggregatorV1 is
     UUPSUpgradeable,
     AccessControlUpgradeable,
     PausableUpgradeable,
-    ReentrancyGuardUpgradeable
+    ReentrancyGuard
 {
     using SafeERC20 for IERC20;
 
@@ -64,7 +64,7 @@ contract DexAggregatorV1 is
     bytes32 private constant STORAGE_LOCATION_V1 =
         0xd87ff71024a4d1c4d04e88b39e8672e110e0b1a5a6ca82cf2a4710b85e0e6800;
 
-    function _getV1Storage() private pure returns (AggregatorV1Storage storage $) {
+    function _getV1Storage() internal pure returns (AggregatorV1Storage storage $) {
         assembly {
             $.slot := STORAGE_LOCATION_V1
         }
@@ -72,7 +72,9 @@ contract DexAggregatorV1 is
 
     // ═══════════════ CONSTANTS ═══════════════════════════════════
 
-    uint24[4] private constant V3_FEE_TIERS = [uint24(100), 500, 3000, 10000];
+    function _getV3FeeTiers() internal pure returns (uint24[4] memory) {
+        return [uint24(100), 500, 3000, 10000];
+    }
 
     // ═══════════════ EVENTS ═════════════════════════════════════
 
@@ -118,10 +120,9 @@ contract DexAggregatorV1 is
             revert ZeroAddress();
         }
 
-        __UUPSUpgradeable_init();
         __AccessControl_init();
         __Pausable_init();
-        __ReentrancyGuard_init();
+        // ReentrancyGuard (non-upgradeable) requires no init in OZ v5
 
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
         _grantRole(OPERATOR_ROLE, _admin);
@@ -190,10 +191,10 @@ contract DexAggregatorV1 is
         returns (uint256 bestAmountOut, uint24 bestFee)
     {
         for (uint256 i = 0; i < 4; i++) {
-            uint256 out = getV3Quote(tokenIn, tokenOut, amountIn, V3_FEE_TIERS[i]);
+            uint256 out = getV3Quote(tokenIn, tokenOut, amountIn, _getV3FeeTiers()[i]);
             if (out > bestAmountOut) {
                 bestAmountOut = out;
-                bestFee = V3_FEE_TIERS[i];
+                bestFee = _getV3FeeTiers()[i];
             }
         }
     }
