@@ -6,6 +6,8 @@ A DEX aggregator contract for Uniswap V2 and V3 on Sepolia. Compares quotes acro
 
 The protocol is deployed behind an ERC-1967 UUPS proxy. A first upgrade (V1 → V2) extends single-hop routing with multi-hop paths through a configurable list of intermediate tokens.
 
+For the mathematical analysis — AMM invariants, monotonicity / boundedness / concavity proofs, single-hop optimality theorem, multi-hop dominance characterization — see [`docs/litepaper.pdf`](docs/litepaper.pdf).
+
 ---
 
 ## Architecture
