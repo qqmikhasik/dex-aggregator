@@ -11,16 +11,16 @@ import {IUniswapV3Factory} from "../src/interfaces/IUniswapV3Factory.sol";
 /// @notice Run with: forge test --fork-url $SEPOLIA_RPC_URL --match-contract DexAggregatorFork
 contract DexAggregatorForkTest is Test {
     // Sepolia Uniswap addresses
-    address constant V2_ROUTER  = 0xeE567Fe1712Faf6149d80dA1E6934E354124CfE3;
+    address constant V2_ROUTER = 0xeE567Fe1712Faf6149d80dA1E6934E354124CfE3;
     address constant V2_FACTORY = 0xF62c03E08ada871A0bEb309762E260a7a6a880E6;
-    address constant V3_ROUTER  = 0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E;
+    address constant V3_ROUTER = 0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E;
     address constant V3_FACTORY = 0x0227628f3F023bb0B980b67D528571c95c6DaC1c;
-    address constant V3_QUOTER  = 0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3;
-    address constant WETH       = 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14;
+    address constant V3_QUOTER = 0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3;
+    address constant WETH = 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14;
 
     // Well-known Sepolia test tokens (may or may not have liquidity)
     address constant USDC_SEPOLIA = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238; // Circle USDC
-    address constant UNI_SEPOLIA  = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984; // UNI (has pool)
+    address constant UNI_SEPOLIA = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984; // UNI (has pool)
 
     DexAggregatorV1 public agg;
     address public admin = address(0xA11CE);
@@ -33,8 +33,7 @@ contract DexAggregatorForkTest is Test {
         DexAggregatorV1 impl = new DexAggregatorV1();
 
         bytes memory initData = abi.encodeCall(
-            DexAggregatorV1.initialize,
-            (V2_ROUTER, V2_FACTORY, V3_ROUTER, V3_FACTORY, V3_QUOTER, WETH, admin)
+            DexAggregatorV1.initialize, (V2_ROUTER, V2_FACTORY, V3_ROUTER, V3_FACTORY, V3_QUOTER, WETH, admin)
         );
 
         ERC1967Proxy proxy = new ERC1967Proxy(address(impl), initData);

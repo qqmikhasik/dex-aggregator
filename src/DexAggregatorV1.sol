@@ -61,8 +61,7 @@ contract DexAggregatorV1 is
     }
 
     // keccak256(abi.encode(uint256(keccak256("dex-aggregator.storage.v1")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant STORAGE_LOCATION_V1 =
-        0xd87ff71024a4d1c4d04e88b39e8672e110e0b1a5a6ca82cf2a4710b85e0e6800;
+    bytes32 private constant STORAGE_LOCATION_V1 = 0xd87ff71024a4d1c4d04e88b39e8672e110e0b1a5a6ca82cf2a4710b85e0e6800;
 
     function _getV1Storage() internal pure returns (AggregatorV1Storage storage $) {
         assembly {
@@ -114,9 +113,10 @@ contract DexAggregatorV1 is
         address _weth,
         address _admin
     ) external initializer {
-        if (_v2Router == address(0) || _v2Factory == address(0) || _v3Router == address(0)
-            || _v3Factory == address(0) || _v3Quoter == address(0) || _weth == address(0) || _admin == address(0))
-        {
+        if (
+            _v2Router == address(0) || _v2Factory == address(0) || _v3Router == address(0) || _v3Factory == address(0)
+                || _v3Quoter == address(0) || _weth == address(0) || _admin == address(0)
+        ) {
             revert ZeroAddress();
         }
 
@@ -139,11 +139,7 @@ contract DexAggregatorV1 is
     // ═══════════════ QUOTING (read functions) ═══════════════════
 
     /// @notice Get a quote from Uniswap V2 for a single-hop swap
-    function getV2Quote(address tokenIn, address tokenOut, uint256 amountIn)
-        public
-        view
-        returns (uint256 amountOut)
-    {
+    function getV2Quote(address tokenIn, address tokenOut, uint256 amountIn) public view returns (uint256 amountOut) {
         AggregatorV1Storage storage s = _getV1Storage();
 
         address pair = IUniswapV2Factory(s.v2Factory).getPair(tokenIn, tokenOut);
@@ -170,15 +166,14 @@ contract DexAggregatorV1 is
         address pool = IUniswapV3Factory(s.v3Factory).getPool(tokenIn, tokenOut, fee);
         if (pool == address(0)) return 0;
 
-        try IQuoterV2(s.v3Quoter).quoteExactInputSingle(
-            IQuoterV2.QuoteExactInputSingleParams({
-                tokenIn: tokenIn,
-                tokenOut: tokenOut,
-                amountIn: amountIn,
-                fee: fee,
-                sqrtPriceLimitX96: 0
-            })
-        ) returns (uint256 quoted, uint160, uint32, uint256) {
+        try IQuoterV2(s.v3Quoter)
+            .quoteExactInputSingle(
+                IQuoterV2.QuoteExactInputSingleParams({
+                    tokenIn: tokenIn, tokenOut: tokenOut, amountIn: amountIn, fee: fee, sqrtPriceLimitX96: 0
+                })
+            ) returns (
+            uint256 quoted, uint160, uint32, uint256
+        ) {
             amountOut = quoted;
         } catch {
             amountOut = 0;
@@ -200,10 +195,7 @@ contract DexAggregatorV1 is
     }
 
     /// @notice Get the best quote across V2 and V3
-    function getQuote(address tokenIn, address tokenOut, uint256 amountIn)
-        external
-        returns (Quote memory bestQuote)
-    {
+    function getQuote(address tokenIn, address tokenOut, uint256 amountIn) external returns (Quote memory bestQuote) {
         if (amountIn == 0) revert ZeroAmount();
 
         uint256 v2Out = getV2Quote(tokenIn, tokenOut, amountIn);
@@ -338,17 +330,18 @@ contract DexAggregatorV1 is
 
         IERC20(tokenIn).forceApprove(s.v3Router, amountIn);
 
-        return ISwapRouter(s.v3Router).exactInputSingle(
-            ISwapRouter.ExactInputSingleParams({
-                tokenIn: tokenIn,
-                tokenOut: tokenOut,
-                fee: fee,
-                recipient: recipient,
-                amountIn: amountIn,
-                amountOutMinimum: amountOutMin,
-                sqrtPriceLimitX96: 0
-            })
-        );
+        return ISwapRouter(s.v3Router)
+            .exactInputSingle(
+                ISwapRouter.ExactInputSingleParams({
+                    tokenIn: tokenIn,
+                    tokenOut: tokenOut,
+                    fee: fee,
+                    recipient: recipient,
+                    amountIn: amountIn,
+                    amountOutMinimum: amountOutMin,
+                    sqrtPriceLimitX96: 0
+                })
+            );
     }
 
     function _applyProtocolFee(address tokenOut, uint256 amountOut, address recipient)
@@ -391,14 +384,37 @@ contract DexAggregatorV1 is
 
     // ═══════════════ VIEW HELPERS ═══════════════════════════════
 
-    function getV2Router() external view returns (address) { return _getV1Storage().v2Router; }
-    function getV2Factory() external view returns (address) { return _getV1Storage().v2Factory; }
-    function getV3Router() external view returns (address) { return _getV1Storage().v3Router; }
-    function getV3Factory() external view returns (address) { return _getV1Storage().v3Factory; }
-    function getV3Quoter() external view returns (address) { return _getV1Storage().v3Quoter; }
-    function getWeth() external view returns (address) { return _getV1Storage().weth; }
-    function getProtocolFeeBps() external view returns (uint256) { return _getV1Storage().protocolFeeBps; }
-    function getFeeRecipient() external view returns (address) { return _getV1Storage().feeRecipient; }
+    function getV2Router() external view returns (address) {
+        return _getV1Storage().v2Router;
+    }
+
+    function getV2Factory() external view returns (address) {
+        return _getV1Storage().v2Factory;
+    }
+
+    function getV3Router() external view returns (address) {
+        return _getV1Storage().v3Router;
+    }
+
+    function getV3Factory() external view returns (address) {
+        return _getV1Storage().v3Factory;
+    }
+
+    function getV3Quoter() external view returns (address) {
+        return _getV1Storage().v3Quoter;
+    }
+
+    function getWeth() external view returns (address) {
+        return _getV1Storage().weth;
+    }
+
+    function getProtocolFeeBps() external view returns (uint256) {
+        return _getV1Storage().protocolFeeBps;
+    }
+
+    function getFeeRecipient() external view returns (address) {
+        return _getV1Storage().feeRecipient;
+    }
 
     function version() external pure virtual returns (string memory) {
         return "1.0.0";

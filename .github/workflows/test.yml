@@ -7,12 +7,9 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  FOUNDRY_PROFILE: ci
-
 jobs:
   check:
-    name: Foundry project
+    name: Build & Test
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,11 +25,21 @@ jobs:
       - name: Show Forge version
         run: forge --version
 
-      - name: Run Forge fmt
+      - name: Check formatting
         run: forge fmt --check
 
-      - name: Run Forge build
+      - name: Build (with --sizes)
         run: forge build --sizes
 
-      - name: Run Forge tests
-        run: forge test -vvv
+      - name: Run unit + library + fuzz tests
+        # Fork tests require SEPOLIA_RPC_URL; excluded here.
+        run: forge test --no-match-contract DexAggregatorForkTest -vvv
+
+      - name: Gas report
+        run: forge test --no-match-contract DexAggregatorForkTest --gas-report > gas-report.txt
+
+      - name: Upload gas report
+        uses: actions/upload-artifact@v4
+        with:
+          name: gas-report
+          path: gas-report.txt

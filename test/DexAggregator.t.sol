@@ -44,23 +44,16 @@ contract MockV2Pair {
 }
 
 contract MockV2Router {
-    function getAmountsOut(uint256 amountIn, address[] calldata path)
-        external
-        pure
-        returns (uint256[] memory amounts)
-    {
+    function getAmountsOut(uint256 amountIn, address[] calldata path) external pure returns (uint256[] memory amounts) {
         amounts = new uint256[](path.length);
         amounts[0] = amountIn;
         amounts[1] = (amountIn * 997) / 1000; // simplified
     }
 
-    function swapExactTokensForTokens(
-        uint256 amountIn,
-        uint256,
-        address[] calldata path,
-        address to,
-        uint256
-    ) external returns (uint256[] memory amounts) {
+    function swapExactTokensForTokens(uint256 amountIn, uint256, address[] calldata path, address to, uint256)
+        external
+        returns (uint256[] memory amounts)
+    {
         amounts = new uint256[](path.length);
         amounts[0] = amountIn;
         uint256 out = (amountIn * 997) / 1000;
@@ -225,7 +218,15 @@ contract DexAggregatorTest is Test {
         DexAggregatorV1 newImpl = new DexAggregatorV1();
         bytes memory initData = abi.encodeCall(
             DexAggregatorV1.initialize,
-            (address(0), address(v2Factory), address(v3Router), address(v3Factory), address(v3Quoter), address(weth), admin)
+            (
+                address(0),
+                address(v2Factory),
+                address(v3Router),
+                address(v3Factory),
+                address(v3Quoter),
+                address(weth),
+                admin
+            )
         );
         vm.expectRevert(DexAggregatorV1.ZeroAddress.selector);
         new ERC1967Proxy(address(newImpl), initData);
@@ -346,10 +347,7 @@ contract DexAggregatorTest is Test {
         address[] memory intermediateTokens = new address[](1);
         intermediateTokens[0] = address(weth);
 
-        agg().upgradeToAndCall(
-            address(implV2),
-            abi.encodeCall(DexAggregatorV2.initializeV2, (intermediateTokens))
-        );
+        agg().upgradeToAndCall(address(implV2), abi.encodeCall(DexAggregatorV2.initializeV2, (intermediateTokens)));
 
         DexAggregatorV2 aggV2 = DexAggregatorV2(address(proxy));
         assertEq(aggV2.version(), "2.0.0");
@@ -366,10 +364,7 @@ contract DexAggregatorTest is Test {
 
         DexAggregatorV2 implV2 = new DexAggregatorV2();
         address[] memory intermediateTokens = new address[](0);
-        agg().upgradeToAndCall(
-            address(implV2),
-            abi.encodeCall(DexAggregatorV2.initializeV2, (intermediateTokens))
-        );
+        agg().upgradeToAndCall(address(implV2), abi.encodeCall(DexAggregatorV2.initializeV2, (intermediateTokens)));
 
         DexAggregatorV2 aggV2 = DexAggregatorV2(address(proxy));
         assertEq(aggV2.getProtocolFeeBps(), 42);
@@ -382,15 +377,16 @@ contract DexAggregatorTest is Test {
 
     function test_CannotReinitialize() public {
         vm.expectRevert();
-        agg().initialize(
-            address(v2Router),
-            address(v2Factory),
-            address(v3Router),
-            address(v3Factory),
-            address(v3Quoter),
-            address(weth),
-            admin
-        );
+        agg()
+            .initialize(
+                address(v2Router),
+                address(v2Factory),
+                address(v3Router),
+                address(v3Factory),
+                address(v3Quoter),
+                address(weth),
+                admin
+            );
     }
 }
 

@@ -34,11 +34,7 @@ library DexAggregatorLib {
     }
 
     /// @notice Check if actual amount is within acceptable slippage of expected
-    function isWithinSlippage(uint256 actual, uint256 expected, uint256 maxSlippageBps)
-        internal
-        pure
-        returns (bool)
-    {
+    function isWithinSlippage(uint256 actual, uint256 expected, uint256 maxSlippageBps) internal pure returns (bool) {
         if (expected == 0) return actual == 0;
         uint256 minAcceptable = (expected * (10000 - maxSlippageBps)) / 10000;
         return actual >= minAcceptable;

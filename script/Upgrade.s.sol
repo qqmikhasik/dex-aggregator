@@ -26,9 +26,8 @@ contract UpgradeScript is Script {
         intermediateTokens[0] = SEPOLIA_WETH;
 
         // 3. Upgrade via UUPS
-        DexAggregatorV1(proxyAddress).upgradeToAndCall(
-            address(implV2), abi.encodeCall(DexAggregatorV2.initializeV2, (intermediateTokens))
-        );
+        DexAggregatorV1(proxyAddress)
+            .upgradeToAndCall(address(implV2), abi.encodeCall(DexAggregatorV2.initializeV2, (intermediateTokens)));
         console.log("Upgraded to V2");
         console.log("Version:", DexAggregatorV2(proxyAddress).version());
 

@@ -22,8 +22,7 @@ contract DexAggregatorV2 is DexAggregatorV1 {
     }
 
     // keccak256(abi.encode(uint256(keccak256("dex-aggregator.storage.v2")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant STORAGE_LOCATION_V2 =
-        0xa5bf72dab67a7a6fc6bb5ea14dfbd2fdb29a5b1c5a1a2b2eab5c9e0d7f8c9a00;
+    bytes32 private constant STORAGE_LOCATION_V2 = 0xa5bf72dab67a7a6fc6bb5ea14dfbd2fdb29a5b1c5a1a2b2eab5c9e0d7f8c9a00;
 
     function _getV2Storage() private pure returns (AggregatorV2Storage storage $) {
         assembly {
@@ -176,9 +175,7 @@ contract DexAggregatorV2 is DexAggregatorV1 {
 
         if (amountOut < amountOutMin) revert InsufficientOutputAmount(amountOut, amountOutMin);
 
-        emit SwapExecuted(
-            tokenIn, tokenOut, useV2 ? DexType.V2 : DexType.V3, amountIn, amountOut, recipient
-        );
+        emit SwapExecuted(tokenIn, tokenOut, useV2 ? DexType.V2 : DexType.V3, amountIn, amountOut, recipient);
     }
 
     // ═══════════════ INTERNAL MULTI-HOP ════════════════════════
@@ -201,9 +198,8 @@ contract DexAggregatorV2 is DexAggregatorV1 {
         path[1] = mid;
         path[2] = tokenOut;
 
-        uint256[] memory amounts = IUniswapV2Router02(sv1.v2Router).swapExactTokensForTokens(
-            amountIn, amountOutMin, path, recipient, deadline
-        );
+        uint256[] memory amounts = IUniswapV2Router02(sv1.v2Router)
+            .swapExactTokensForTokens(amountIn, amountOutMin, path, recipient, deadline);
 
         return amounts[amounts.length - 1];
     }
@@ -234,14 +230,12 @@ contract DexAggregatorV2 is DexAggregatorV1 {
 
         bytes memory path = DexAggregatorLib.encodePath(tokens, fees);
 
-        return ISwapRouter(sv1.v3Router).exactInput(
-            ISwapRouter.ExactInputParams({
-                path: path,
-                recipient: recipient,
-                amountIn: amountIn,
-                amountOutMinimum: amountOutMin
-            })
-        );
+        return ISwapRouter(sv1.v3Router)
+            .exactInput(
+                ISwapRouter.ExactInputParams({
+                    path: path, recipient: recipient, amountIn: amountIn, amountOutMinimum: amountOutMin
+                })
+            );
     }
 
     // ═══════════════ ADMIN ═════════════════════════════════════

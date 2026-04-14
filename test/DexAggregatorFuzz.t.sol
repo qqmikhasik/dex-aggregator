@@ -6,11 +6,10 @@ import {DexAggregatorLib} from "../src/libraries/DexAggregatorLib.sol";
 
 contract DexAggregatorFuzzTest is Test {
     /// @notice Fuzz: output should NEVER exceed reserveOut
-    function testFuzz_CalcV2AmountOut_NeverExceedsReserve(
-        uint256 amountIn,
-        uint112 reserveIn,
-        uint112 reserveOut
-    ) public pure {
+    function testFuzz_CalcV2AmountOut_NeverExceedsReserve(uint256 amountIn, uint112 reserveIn, uint112 reserveOut)
+        public
+        pure
+    {
         // Bound to reasonable values
         vm.assume(amountIn > 0 && amountIn < type(uint112).max);
         vm.assume(reserveIn > 0 && reserveOut > 0);
@@ -37,11 +36,10 @@ contract DexAggregatorFuzzTest is Test {
     }
 
     /// @notice Fuzz: slippage check should be consistent
-    function testFuzz_IsWithinSlippage_Consistent(
-        uint256 actual,
-        uint256 expected,
-        uint256 maxSlippageBps
-    ) public pure {
+    function testFuzz_IsWithinSlippage_Consistent(uint256 actual, uint256 expected, uint256 maxSlippageBps)
+        public
+        pure
+    {
         vm.assume(expected > 0 && expected < type(uint128).max);
         vm.assume(actual < type(uint128).max);
         vm.assume(maxSlippageBps <= 10000);
