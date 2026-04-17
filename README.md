@@ -243,7 +243,18 @@ TKA/TKB are not paired in any Sepolia Uniswap pool. They are provided as ready-t
 | 2 | V1 core logic, mock-based unit tests, V2 multi-hop impl | `src/DexAggregator{V1,V2}.sol`, `test/DexAggregator.t.sol` |
 | 3 | Sepolia fork tests + first deployment + Sourcify verification | `test/DexAggregatorFork.t.sol`, `broadcast/Deploy.s.sol/11155111/` |
 | 4 | V1→V2 upgrade, TestTokens, real WETH/UNI swap through aggregator | `broadcast/Upgrade.s.sol/11155111/`, README walkthrough |
-| 5 | *(pending)* Litepaper, CI, final polish | |
+| 5 | Litepaper, CI, final polish | `docs/litepaper.tex`, `.github/workflows/test.yml` |
+
+---
+
+## Docs
+
+| Document | Description |
+|----------|-------------|
+| [`docs/litepaper.pdf`](docs/litepaper.pdf) | Mathematical analysis: AMM invariants, monotonicity / boundedness / concavity proofs, single-hop optimality theorem, multi-hop dominance characterization |
+| [`docs/litepaper.tex`](docs/litepaper.tex) | LaTeX source for the litepaper |
+| [`docs/dex-aggregator-session-log.md`](docs/dex-aggregator-session-log.md) | Complete session log of the development process |
+| [`docs/SESSION LOG.pdf`](docs/SESSION%20LOG.pdf) | PDF version of the session log |
 
 ---
 
